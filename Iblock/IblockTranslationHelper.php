@@ -29,4 +29,28 @@ class IblockTranslationHelper
 
         return $result;
     }
+
+    /**
+     * Извлекает переводимые поля из секции инфоблока
+     */
+    public function extractTranslatableSectionFields(array $section, int $iblockId): array
+    {
+        $result = [];
+        $sectionId = $section['ID'] ?? 0;
+
+        $fieldsToTranslate = ['NAME', 'DESCRIPTION'];
+        foreach ($fieldsToTranslate as $field) {
+            if (!empty($section[$field]) && is_string($section[$field])) {
+                $result["iblock_{$iblockId}_section_{$sectionId}_{$field}"] = $section[$field];
+            }
+        }
+
+        foreach ($section as $field => $value) {
+            if (strpos($field, 'UF_') === 0 && is_string($value) && !empty($value)) {
+                $result["iblock_{$iblockId}_section_{$sectionId}_{$field}"] = $value;
+            }
+        }
+
+        return $result;
+    }
 }

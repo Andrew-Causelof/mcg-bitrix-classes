@@ -65,4 +65,53 @@ class IblockService
 
         return $ids;
     }
+
+    /**
+     * Получает данные активной секции инфоблока по ID
+     */
+    public function getSectionData(int $iblockId, int $sectionId): array
+    {
+        $res = \CIBlockSection::GetList(
+            [],
+            [
+                'IBLOCK_ID' => $iblockId,
+                'ID' => $sectionId,
+                'ACTIVE' => 'Y',
+                'GLOBAL_ACTIVE' => 'Y'
+            ],
+            false,
+            ['*']
+        );
+
+        if ($section = $res->Fetch()) {
+            return $section;
+        }
+
+        return [];
+    }
+
+    /**
+     * Получает ID всех активных секций инфоблока
+     */
+    public function getActiveSectionIds(int $iblockId): array
+    {
+        $ids = [];
+
+        $res = \CIBlockSection::GetList(
+            ['ID' => 'ASC'],
+            [
+                'IBLOCK_ID' => $iblockId,
+                'ACTIVE' => 'Y',
+                'GLOBAL_ACTIVE' => 'Y'
+            ],
+            false,
+            ['ID']
+        );
+
+        while ($row = $res->Fetch()) {
+            $ids[] = (int)$row['ID'];
+        }
+
+        return $ids;
+    }
 }
