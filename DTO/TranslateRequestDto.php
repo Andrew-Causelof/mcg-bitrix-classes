@@ -12,7 +12,7 @@ class TranslateRequestDto
 
     public function __construct(array $data)
     {
-        foreach (['text', 'lang', 'project', 'key'] as $required) {
+        foreach (['text', 'lang', 'key'] as $required) {
             if (empty($data[$required])) {
                 throw new \InvalidArgumentException("Missing required field: $required");
             }
@@ -20,7 +20,7 @@ class TranslateRequestDto
 
         $this->text = $data['text'];
         $this->lang = $data['lang'];
-        $this->project = $data['project'];
+        $this->project = $data['project'] ?? 'moscow-city-guide';
         $this->key = $data['key'];
         $this->services = $data['services'] ?? ['deepseek'];
     }

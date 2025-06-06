@@ -3,6 +3,7 @@
 namespace Seogravity\Translator;
 
 use Seogravity\HLB\HLBlockTable;
+use Seogravity\DTO\HlBlockRecordDto;
 
 class TranslationRepository
 {
@@ -13,18 +14,26 @@ class TranslationRepository
         $this->hl = new HLBlockTable(HL_BLOCK_ID__TRANSLATION);
     }
 
+    /**
+     * Returns a translation record from the database by key and language.
+     *
+     * @param string $key
+     * @param string $lang
+     *
+     * @return array|null
+     */
     public function getTranslation($key, $lang)
     {
         return $this->hl->getByKeyAndLang($key, $lang);
     }
 
-    public function saveTranslation($key, $original, $lang, $text)
+    /**
+     * @param HlBlockRecordDto $dto
+     *
+     * @return bool|\Bitrix\Main\ORM\Data\AddResult
+     */
+    public function saveTranslation(HlBlockRecordDto $dto)
     {
-        $this->hl->add([
-            'UF_KEY' => $key,
-            'UF_LANG' => $lang,
-            'UF_ORIGINAL' => $original,
-            'UF_TEXT' => $text
-        ]);
+        return $this->hl->add($dto->toArray());
     }
 }

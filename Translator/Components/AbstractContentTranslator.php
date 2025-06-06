@@ -5,6 +5,7 @@ namespace Seogravity\Translator\Components;
 use Seogravity\Translator\TranslationRepository;
 use Seogravity\Translator\TranslationService\TranslatorClient;
 use Seogravity\DTO\TranslateRequestDto;
+use Seogravity\DTO\HlBlockRecordDto;
 
 abstract class AbstractContentTranslator
 {
@@ -19,7 +20,7 @@ abstract class AbstractContentTranslator
 
     abstract public function prepare($componentResult, $lang);
 
-    protected function translate($text, $lang, $key, $services)
+    protected function translate($text, $lang, $key)
     {
         $existing = $this->repository->getTranslation($key, $lang);
         if ($existing) return $existing['UF_TEXT'];
@@ -27,12 +28,15 @@ abstract class AbstractContentTranslator
         $translated = $this->translator->translate(new TranslateRequestDto([
             'text' => $text,
             'lang' => $lang,
-            'project' => '',
-            'key' => $key,
-            'services' => ''
+            'key'  => $key,
         ]));
 
-        $this->repository->saveTranslation($key, $text, $lang, $translated['text']);
+        $this->repository->saveTranslation(new HlBlockRecordDto([
+            'key'       => $key,
+            'lang'      => $lang,
+            'original'  => $text,
+            'text'      => $translated['text']
+        ]));
 
         return $translated['text'];
     }

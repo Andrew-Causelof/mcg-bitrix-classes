@@ -1,6 +1,7 @@
+<?php
+
 namespace Seogravity\DTO;
 
-<?php
 class HlBlockRecordDto
 {
     public string $key;
