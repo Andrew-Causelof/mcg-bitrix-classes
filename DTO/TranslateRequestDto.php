@@ -4,11 +4,11 @@ namespace Seogravity\DTO;
 
 class TranslateRequestDto
 {
-    public string $text;
-    public string $lang;
-    public string $project = 'moscow-city-guide';
-    public string $key;
-    public array $services = ['deepseek'];
+    readonly public string $text;
+    readonly public string $lang;
+    readonly public string $project;
+    readonly public string $key;
+    readonly public array $services;
 
     public function __construct(array $data)
     {

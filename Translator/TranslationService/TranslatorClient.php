@@ -3,39 +3,52 @@
 namespace Seogravity\Translator\TranslationService;
 
 use Seogravity\DTO\TranslateRequestDto;
-
+use Seogravity\DTO\TranslateBatchRequestDto;
 
 class TranslatorClient
 {
     protected $apiUrl = TRANSLATOR_API_URL;
     protected $project = "moscow-city-guide";
 
+
     /**
-     * @param string $text
-     * @param string $lang
-     * @param string $key
-     * @param array $services
-     * @return array
+     * Sends a translation request to the translation service.
+     * 
+     * @param TranslateRequestDto $dto Translation request data transfer object
+     * 
+     * @return array Response from the translation service
      */
-    public function translate(TranslateRequestDto $dto)
+
+    public function translate(TranslateRequestDto $dto): array
     {
-        $payload = json_encode($dto->toArray());
+        return $this->curlRequest('translate', $dto->toArray());
+    }
+
+
+    public function translateBatch(TranslateBatchRequestDto $dto): array
+    {
+        return $this->curlRequest('translate/batch', $dto->toArray());
+    }
+
+    private function curlRequest(string $endpoint, array $payload): array
+    {
+        $json = json_encode($payload);
 
         $curl = curl_init();
 
         curl_setopt_array($curl, [
-            CURLOPT_URL => $this->apiUrl . 'translate',
+            CURLOPT_URL => $this->apiUrl . $endpoint,
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => '',
             CURLOPT_MAXREDIRS => 10,
-            CURLOPT_TIMEOUT => 10,
+            CURLOPT_TIMEOUT => 40,
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST => 'POST',
-            CURLOPT_POSTFIELDS => $payload,
+            CURLOPT_POSTFIELDS => $json,
             CURLOPT_HTTPHEADER => [
                 'Content-Type: application/json',
-                'Content-Length: ' . strlen($payload)
+                'Content-Length: ' . strlen($json)
             ],
         ]);
 
@@ -47,6 +60,12 @@ class TranslatorClient
 
         curl_close($curl);
 
-        return json_decode($response, true);
+        $decoded = json_decode($response, true);
+
+        if (!is_array($decoded)) {
+            throw new \RuntimeException('Invalid response from translation API: ' . $response);
+        }
+
+        return $decoded;
     }
 }

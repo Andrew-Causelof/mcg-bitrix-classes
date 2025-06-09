@@ -4,10 +4,10 @@ namespace Seogravity\DTO;
 
 class HlBlockRecordDto
 {
-    public string $key;
-    public string $lang;
-    public string $original;
-    public string $text;
+    readonly public string $key;
+    readonly public string $lang;
+    readonly public string $original;
+    readonly public string $text;
 
     public function __construct(array $data)
     {

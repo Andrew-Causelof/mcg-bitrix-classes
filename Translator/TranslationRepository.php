@@ -36,4 +36,31 @@ class TranslationRepository
     {
         return $this->hl->add($dto->toArray());
     }
+
+    public function saveMany(array $records): array
+    {
+        $results = [
+            'created' => [],
+            'updated' => [],
+            'failed' => [],
+        ];
+
+        foreach ($records as $record) {
+
+            try {
+                $existing = $this->hl->getByKeyAndLang($record->key, $record->lang);
+                if ($existing) {
+                    $this->hl->update($existing['ID'], $record->toArray());
+                    $results['updated'][] = $record->key;
+                } else {
+                    $this->hl->add($record->toArray());
+                    $results['created'][] = $record->key;
+                }
+            } catch (\Throwable $e) {
+                $results['failed'][$record->key] = $e->getMessage();
+            }
+        }
+
+        return $results;
+    }
 }
